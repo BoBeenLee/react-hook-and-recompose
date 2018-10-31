@@ -1,22 +1,36 @@
-import * as React from 'react';
+import React from 'react';
 import './App.css';
 
-import logo from './logo.svg';
+import SwapList from "./SwapList";
+import useFetch from "./use/useFetch";
 
-class App extends React.Component {
-  public render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.tsx</code> and save to reload.
-        </p>
-      </div>
-    );
-  }
+// 
+
+const App = () => {
+  const { useEffect } = (React as any);
+  const fetchAPI = async (next: string | null) => {
+    const response: any = await fetch(next ? next : "https://swapi.co/api/planets/");
+    return await response.json();
+  };
+
+  const { initialize, append, refresh, fetchState } = useFetch(fetchAPI);
+
+  useEffect(() => {
+    if (fetchState.next === null) {
+      initialize();
+    }
+  })
+
+  // tslint:disable-next-line:no-console
+  console.log(fetchState);
+
+  return (
+    <div className="App">
+      <button onClick={refresh}>refresh</button>
+      <SwapList data={fetchState.data} />
+      <button onClick={append}>append</button>
+    </div>
+  );
 }
 
 export default App;
